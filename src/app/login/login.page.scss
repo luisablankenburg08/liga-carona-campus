@@ -1,0 +1,54 @@
+.login-wrap {
+  max-width: 420px;
+  margin: 48px auto 0;
+}
+
+ion-toolbar {
+  --background: #0f766e;
+  --color: beige;
+  --font-weight: bold;
+}
+
+ion-card-header {
+  font-size:2.4rem;
+  text-align: center;
+  padding-top: 5vh;
+  color: black;
+  font-weight: bold;
+}
+
+ion-card {
+  border-radius: 12px;
+  margin: 0;
+}
+
+ion-item {
+  --background: #f8fafc;
+  --border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.msg-erro {
+  background: #fff1f2;
+  color: #9f1239;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+ion-button {
+  margin-top: 8px;
+}
+
+.entrar {
+  --background: #0f766e;
+  --color: beige;
+  --border-radius: 0.5vw;
+}
+
+.entrarGoogle {
+  --border-color: #0f766e;
+  --color: #0f766e;
+  --background: white;
+  --border-radius: 0.5vw;
+}

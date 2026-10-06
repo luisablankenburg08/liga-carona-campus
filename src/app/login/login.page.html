@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Bar do Joaquim</ion-title>
+    <ion-buttons slot="end">
+      <ion-button type="button">Faça login para acessar o menu</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="login-wrap">
+
+    <ion-card style="background:beige">
+      <ion-card-header>Carona Campus</ion-card-header>
+
+      <ion-card-content>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">E-mail</ion-label>
+          <ion-input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="ex: aluno@ifsc.edu.br">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">Senha</ion-label>
+          <ion-input
+            type="password"
+            [(ngModel)]="senha"
+            placeholder="Digite sua senha">
+          </ion-input>
+        </ion-item>
+
+        <p class="msg-erro" *ngIf="mensagemErro">
+          {{ mensagemErro }}
+        </p>
+
+        <ion-button class="entrar" expand="block" (click)="login()">
+          Entrar no Bar
+        </ion-button>
+        <ion-button class="entrarGoogle"
+          expand="block"
+          fill="outline"
+          (click)="loginGoogle()">
+          Entrar com Google
+        </ion-button>
+        <ion-button expand="block" fill="clear" type="button" (click)="irParaCadastro()" style="color:#0f766e">
+          Criar uma ficha
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+</ion-content>

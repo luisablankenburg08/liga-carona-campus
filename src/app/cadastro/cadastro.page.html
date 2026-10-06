@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Carona Campus</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="login-wrap">
+
+    <ion-card>
+      <ion-card-header style="color: #0f766e">Cadastrar</ion-card-header>
+
+      <ion-card-content>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">E-mail</ion-label>
+          <ion-input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="ex: aluno@ifsc.edu.br">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">Senha</ion-label>
+          <ion-input
+            type="password"
+            [(ngModel)]="senha"
+            placeholder="Digite sua senha">
+          </ion-input>
+        </ion-item>
+
+        <p class="msg-erro" *ngIf="mensagemErro">
+          {{ mensagemErro }}
+        </p>
+
+        <ion-button class="entrar" expand="block" (click)="cadastrar()">
+          Criar ficha
+        </ion-button>
+
+        <ion-button expand="block" fill="clear" type="button" (click)="irParaLogin()" style="color: #0f766e">
+          Já tem uma ficha? Entre aqui
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+</ion-content>
