@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>menu</ion-title>
+    <ion-title>Carona Campus</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">sair</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -12,6 +15,6 @@
     </ion-toolbar>
   </ion-header>
   
-<app-carona></app-carona>
+<app-carona *ngFor="let carona of listacaronas" [carona]="carona"></app-carona>
 
 </ion-content>

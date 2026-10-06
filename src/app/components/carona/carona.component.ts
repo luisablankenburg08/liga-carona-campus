@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import {IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonInput, IonText, IonIcon } from '@ionic/angular';
+import {IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonInput, IonText, IonIcon, IonCardTitle } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Carona} from '../../models/carona';
 import { alertCircleOutline } from 'ionicons/icons';
@@ -8,15 +8,15 @@ import { alertCircleOutline } from 'ionicons/icons';
   selector: 'app-carona',
   templateUrl: './carona.component.html',
   styleUrls: ['./carona.component.scss'],
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonInput, IonText, IonIcon, CommonModule],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonCardTitle, IonInput, IonText, IonIcon, CommonModule],
 })
-export class ProdutoComponent  implements OnInit {
+export class CaronaComponent  implements OnInit {
 
   readonly alertCircleOutline = alertCircleOutline;
 
   @Input() 
   
-  carona: Carona = { id: 0, user: 0, vaga: 0, embarque: '', desembarque: '', selecionado: false};
+  carona: Carona = { id: 0, user: 0, vaga: 0, embarque: '', desembarque: '', hora: '', selecionado: false};
 
   constructor() { }
 

@@ -4,5 +4,6 @@ export type Carona = {
   vaga: number,
   embarque: string,
   desembarque: string,
+  hora: string,
   selecionado: boolean
 }

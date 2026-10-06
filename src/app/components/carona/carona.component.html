@@ -1,13 +1,13 @@
 <ion-card>
+  <ion-card-content class="conteudo">
 
-  <ion-card-header>
-    <span style="font-size: 1.2rem; color: black; font-weight: bold">{{ carona?.embarque}} -> {{carona?.desembarque}}</span>
-  </ion-card-header>
+    <div>
+      <ion-card-title style="font-size: 1.2rem; color: black; font-weight: bold">{{ carona?.embarque}} → {{carona?.desembarque}} | {{carona?.hora}}</ion-card-title>
+       <span class="vagas">{{carona?.vaga}} vagas</span>
+    </div>
 
-  <ion-card-content>
-    <div class="produto-badges">
-      <span class="categoria-badge">{{carona?.vaga }}</span>
+     <div class="add">
+      <ion-button>+</ion-button>
     </div>
   </ion-card-content>
-
 </ion-card>
