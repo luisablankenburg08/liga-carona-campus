@@ -27,7 +27,7 @@ export const routes: Routes = [
     loadComponent: () => import('./menu/menu.page').then( m => m.MenuPage)
   },
   {
-    path: 'carona',
-    loadComponent: () => import('./carona/carona.page').then( m => m.CaronaPage)
-  },
+    path: 'minhas-caronas',
+    loadComponent: () => import('./minhas-caronas/minhas-caronas.page').then( m => m.MinhasCaronasPage)
+  }
 ];

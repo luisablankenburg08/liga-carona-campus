@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Carona Campus</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">sair</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">carona</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+    <ion-text class="titulo">Próximas Viagens</ion-text>
+<div *ngFor="let carona of listacaronas">
+  <app-carona *ngIf="carona?.selecionado === true" [carona]="carona"></app-carona>
+</div>
+
+    <ion-button routerLink="/menu"  class="btn-menu">Voltar ao Menu</ion-button>
+</ion-content>

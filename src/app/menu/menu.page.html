@@ -9,17 +9,9 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-button routerLink="/carona" style="--background: #0f766e;">Minhas Caronas</ion-button>
-  
   <div class="vaga">
     <app-carona *ngFor="let carona of listacaronas" [carona]="carona" ></app-carona>
   </div>
-
     
+  <ion-button routerLink="/minhas-caronas" class="btn-caronas">Minhas Caronas</ion-button>
 </ion-content>

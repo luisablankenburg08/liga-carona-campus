@@ -1,0 +1,38 @@
+ion-toolbar {
+  --background: #0f766e;
+  --color: beige;
+  --font-weight: bold;
+}
+
+ion-card-header {
+  font-size:2.4rem;
+  text-align: center;
+  padding-top: 5vh;
+  color: black;
+  font-weight: bold;
+}
+
+ion-card {
+  border-radius: 12px;
+  margin: 0;
+}
+
+ion-item {
+  --background: #f8fafc;
+  --border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.titulo {
+  color: #0f766e;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 6vw;
+  font-weight: bold;
+}
+
+.btn-menu {
+    --background: #0f766e;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    margin-left: 25vw;
+    width: 50vw;
+}

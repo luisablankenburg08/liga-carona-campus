@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, output } from '@angular/core';
 import {IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonInput, IonText, IonIcon, IonCardTitle } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Carona} from '../../models/carona';
@@ -15,6 +15,8 @@ export class CaronaComponent  implements OnInit {
   readonly alertCircleOutline = alertCircleOutline;
 
   @Input() 
+
+  @Output()
   
   carona: Carona = { id: 0, user: 0, vaga: 0, embarque: '', desembarque: '', hora: '', selecionado: false};
 
@@ -25,8 +27,13 @@ export class CaronaComponent  implements OnInit {
       this.carona.selecionado = false;
     }
   
-  this.carona.selecionado = true;
-}
+    this.carona.selecionado = true;
+  }
+
+  add() {
+      this.carona.vaga = this.carona.vaga - 1;
+  }
+ 
   ngOnInit() {}
 
 }

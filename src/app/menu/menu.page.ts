@@ -6,6 +6,7 @@ import { Carona } from '../models/carona';
 import { CaronaService } from '../services/caronaService';
 import {CaronaComponent} from '../components/carona/carona.component';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/authService';
 import { NavController } from '@ionic/angular';
 
@@ -13,7 +14,7 @@ import { NavController } from '@ionic/angular';
   selector: 'app-menu',
   templateUrl: './menu.page.html',
   styleUrls: ['./menu.page.scss'],
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, CaronaComponent, IonButton, IonButtons, IonIcon]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, CaronaComponent, IonButton, IonButtons, IonIcon, RouterLink]
 })
 export class MenuPage  {
 
@@ -34,7 +35,7 @@ export class MenuPage  {
     this.navCtrl.navigateRoot('/login');
   }
 
-  ngOnInit() {
+ ngOnInit() {
   }
 
 }
