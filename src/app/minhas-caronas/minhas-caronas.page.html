@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Minhas Caronas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">sair</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Minhas Caronas</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <main class="lista-reservas">
+    @if (mensagemReserva) {
+      <p class="mensagem-sucesso" role="status">{{ mensagemReserva }}</p>
+    }
+    @if (mensagemErro) {
+      <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
+    }
+    @if (carregando) {
+      <p class="estado-vazio" role="status">Carregando suas caronas...</p>
+    } @else if (sincronizando) {
+      <p class="estado-atualizacao" role="status">Atualizando suas caronas...</p>
+    }
+    <section>
+      <h2>Próximas caronas</h2>
+      @for (carona of proximasCaronas; track carona.id) {
+        <app-carona
+          [carona]="carona"
+          modo="reservada"
+          (reservaCancelada)="cancelarReserva($event)"
+        ></app-carona>
+      } @empty {
+        <p class="estado-vazio">Você ainda não tem caronas próximas reservadas.</p>
+      }
+    </section>
+
+    <section>
+      <h2>Histórico de caronas realizadas</h2>
+      @for (carona of historicoCaronas; track carona.id) {
+        <app-carona [carona]="carona" modo="historico"></app-carona>
+      } @empty {
+        <p class="estado-vazio">As caronas reservadas e realizadas aparecerão aqui após a data da viagem.</p>
+      }
+    </section>
+
+    <div class="acoes-pagina">
+      <ion-button (click)="voltarParaCaronas()">Ver caronas disponíveis</ion-button>
+    </div>
+  </main>
+</ion-content>

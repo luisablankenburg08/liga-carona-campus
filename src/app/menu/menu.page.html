@@ -15,11 +15,37 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-button routerLink="/carona" style="--background: #0f766e;">Minhas Caronas</ion-button>
-  
+  <div class="filtro-caronas">
+    <ion-button fill="outline" (click)="abrirCaronasAnteriores()">Caronas Anteriores</ion-button>
+  </div>
+  <section class="filtro-caronas">
+    <h2>{{ somenteHoje ? 'Saindo hoje' : 'Todas as próximas caronas' }}</h2>
+    <div class="acoes-filtro">
+      <ion-button fill="outline" (click)="alternarFiltro()">
+        {{ somenteHoje ? 'Ver todas' : 'Saindo hoje' }}
+      </ion-button>
+    </div>
+  </section>
+  @if (mensagemErro) {
+    <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
+  }
+  @if (carregando) {
+    <p class="estado-vazio" role="status">Carregando caronas...</p>
+  } @else if (sincronizando) {
+    <p class="estado-atualizacao" role="status">Atualizando disponibilidade...</p>
+  }
   <div class="vaga">
-    <app-carona *ngFor="let carona of listacaronas" [carona]="carona" ></app-carona>
+    @for (carona of listacaronas; track carona.id) {
+      <app-carona
+        [carona]="carona"
+        (adicionar)="adicionarCarona($event)"
+      ></app-carona>
+    } @empty {
+      <p class="estado-vazio">Não há caronas disponíveis no momento.</p>
+    }
   </div>
 
-    
+  <div class="minhas-caronas">
+    <ion-button (click)="abrirMinhasCaronas()">Minhas Caronas</ion-button>
+  </div>
 </ion-content>

@@ -1,15 +1,48 @@
 .vagas {
-    display: flex;
+  display: block;
+  margin-top: 6px;
+  color: #475569;
 }
 
-.add {
-    display: flex;
-    align-items: center;
+.vagas-restantes {
+  display: block;
+  margin-top: 6px;
+  color: red;
+}
+
+.detalhes {
+  min-width: 0;
+}
+
+.detalhes ion-card-title {
+  font-size: 1.1rem;
+  color: #111827;
+  font-weight: bold;
+}
+
+.detalhes p {
+  margin: 6px 0 0;
+  color: #475569;
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.adicionar {
+  --background: #0f766e;
+}
+
+.cancelar {
+  --color: #0f766e;
+  --border-color: #0f766e;
 }
 
 .conteudo {
-    display: flex;
-    align-items: center; 
-    justify-content: space-between; 
-    width: 100%
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }

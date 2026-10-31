@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Caronas Anteriores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">sair</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Caronas Anteriores</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <main class="lista-caronas">
+    @if (mensagemErro) {
+      <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
+    }
+    @if (carregando) {
+      <p class="estado-vazio" role="status">Carregando caronas anteriores...</p>
+    } @else if (sincronizando) {
+      <p class="estado-atualizacao" role="status">Atualizando caronas anteriores...</p>
+    }
+    @for (carona of caronasAnteriores; track carona.id) {
+      <app-carona [carona]="carona" modo="historico"></app-carona>
+    } @empty {
+      <p class="estado-vazio">Nenhuma carona anterior encontrada.</p>
+    }
+
+    <div class="acoes-pagina">
+      <ion-button (click)="voltarParaCaronas()">Voltar às caronas</ion-button>
+    </div>
+  </main>
+</ion-content>

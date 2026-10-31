@@ -1,13 +1,36 @@
 <ion-card>
   <ion-card-content class="conteudo">
-
-    <div>
-      <ion-card-title style="font-size: 1.2rem; color: black; font-weight: bold">{{ carona?.embarque}} → {{carona?.desembarque}} | {{carona?.hora}}</ion-card-title>
-       <span class="vagas">{{carona?.vaga}} vagas</span>
+    <div class="detalhes">
+      <ion-card-title>{{ carona.embarque }} → {{ carona.desembarque }}</ion-card-title>
+      <p>{{ carona.data | date: 'dd/MM/yyyy':'UTC' }} às {{ carona.hora }}</p>
+      @if (carona.vaga === 0) {
+        <span class="vagas-restantes">Esgotado</span>
+      } @else if (carona.vaga === 1) {
+        <span class="vagas-restantes">Apenas 1 vaga restante</span>
+      } @else {
+        <span class="vagas">{{ carona.vaga }} vagas restantes</span>
+      }
     </div>
 
-     <div class="add">
-      <ion-button style="--background: #0f766e;">+</ion-button>
+    <div class="acoes">
+      @if (modo === 'disponivel') {
+        <ion-button
+          class="adicionar"
+          [disabled]="carona.vaga <= 0 || carona.selecionado"
+          [attr.aria-label]="carona.selecionado ? 'Carona já reservada' : 'Adicionar carona'"
+          (click)="adicionar.emit(carona)"
+        >
+          {{ carona.selecionado ? 'Adicionada' : '+' }}
+        </ion-button>
+      } @else if (modo === 'reservada') {
+        <ion-button
+          fill="outline"
+          class="cancelar"
+          (click)="reservaCancelada.emit(carona)"
+        >
+          Cancelar reserva
+        </ion-button>
+      }
     </div>
   </ion-card-content>
 </ion-card>

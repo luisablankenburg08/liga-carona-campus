@@ -5,5 +5,6 @@ export type Carona = {
   embarque: string,
   desembarque: string,
   hora: string,
+  data: string,
   selecionado: boolean
 }

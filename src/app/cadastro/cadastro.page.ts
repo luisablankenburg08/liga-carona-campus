@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -19,10 +19,8 @@ export class CadastroPage {
   senha = '';
   mensagemErro = '';
 
-  constructor(
-    private auth: AuthService,
-    private router: Router,
-  ) {}
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   async cadastrar() {
     this.mensagemErro = '';
@@ -44,9 +42,12 @@ export class CadastroPage {
 
     try {
       await this.auth.cadastrar(this.email, this.senha);
-      this.router.navigate(['/cardapio']);
-    } catch (e: any) {
-      this.mensagemErro = this.auth.traduzirErro(e.code);
+      await this.router.navigate(['/menu']);
+    } catch (erro: unknown) {
+      const codigo = erro instanceof Error && 'code' in erro
+        ? String(erro.code)
+        : 'auth/unknown';
+      this.mensagemErro = this.auth.traduzirErro(codigo);
     }
   }
 

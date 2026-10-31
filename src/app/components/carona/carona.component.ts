@@ -1,32 +1,28 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import {IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonInput, IonText, IonIcon, IonCardTitle } from '@ionic/angular';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { IonCard, IonButton, IonCardContent, IonCardTitle } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { Carona} from '../../models/carona';
-import { alertCircleOutline } from 'ionicons/icons';
+import { Carona } from '../../models/carona';
 
 @Component({
   selector: 'app-carona',
   templateUrl: './carona.component.html',
   styleUrls: ['./carona.component.scss'],
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButton, IonCardContent, IonCardHeader, IonLabel, IonButtons, IonCardTitle, IonInput, IonText, IonIcon, CommonModule],
+  imports: [IonCard, IonButton, IonCardContent, IonCardTitle, CommonModule],
 })
-export class CaronaComponent  implements OnInit {
+export class CaronaComponent {
 
-  readonly alertCircleOutline = alertCircleOutline;
+  @Input() carona: Carona = {
+    id: 0,
+    user: 0,
+    vaga: 0,
+    embarque: '',
+    desembarque: '',
+    hora: '',
+    data: '',
+    selecionado: false,
+  };
+  @Input() modo: 'disponivel' | 'reservada' | 'historico' = 'disponivel';
 
-  @Input() 
-  
-  carona: Carona = { id: 0, user: 0, vaga: 0, embarque: '', desembarque: '', hora: '', selecionado: false};
-
-  constructor() { }
-
-  async nasCaronas() {
-    if (this.carona.selecionado === undefined || this.carona.selecionado === null) {
-      this.carona.selecionado = false;
-    }
-  
-  this.carona.selecionado = true;
-}
-  ngOnInit() {}
-
+  @Output() adicionar = new EventEmitter<Carona>();
+  @Output() reservaCancelada = new EventEmitter<Carona>();
 }
