@@ -35,13 +35,19 @@ function caronaValida(valor: unknown): valor is Carona {
 export class CaronaService {
   readonly caronas: Carona[] = caronasIniciais.map((carona) => ({ ...carona }));
   mensagemReserva: string | null = null;
+  private caronasCarregadas = false;
 
   async carregarCaronas(): Promise<void> {
+    if (this.caronasCarregadas) {
+      return;
+    }
+
     this.restaurarCaronasLocais();
+    this.caronasCarregadas = true;
   }
 
   invalidarCache(): void {
-    this.restaurarCaronasLocais();
+    this.caronasCarregadas = false;
   }
 
   async reservar(carona: Carona): Promise<boolean> {
@@ -146,15 +152,10 @@ export class CaronaService {
   }
 
   private lerCaronasSalvas(): Carona[] | null {
-    const cacheAtual = localStorage.getItem(chaveCaronasLocais);
-    if (cacheAtual) {
-      return this.validarCaronasSalvas(cacheAtual);
-    }
-
     const cacheLegado: Carona[] = [];
     for (let indice = 0; indice < localStorage.length; indice += 1) {
       const chave = localStorage.key(indice);
-      if (!chave?.startsWith('carona-campus:')) {
+      if (!chave?.startsWith('carona-campus:') || chave === chaveCaronasLocais) {
         continue;
       }
 
@@ -162,6 +163,11 @@ export class CaronaService {
       if (dados) {
         cacheLegado.push(...(this.validarCaronasSalvas(dados) ?? []));
       }
+    }
+
+    const cacheAtual = localStorage.getItem(chaveCaronasLocais);
+    if (cacheAtual) {
+      cacheLegado.push(...(this.validarCaronasSalvas(cacheAtual) ?? []));
     }
 
     return cacheLegado.length > 0 ? cacheLegado : null;
