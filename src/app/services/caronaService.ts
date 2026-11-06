@@ -1,262 +1,84 @@
-import { inject, Injectable } from '@angular/core';
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  runTransaction,
-  where,
-} from 'firebase/firestore';
+import { Injectable } from '@angular/core';
 import { Carona } from '../models/carona';
-import { db } from '../firebase.config';
-import { AuthService } from './authService';
-import type { User } from 'firebase/auth';
 
-type ReservaFirestore = {
-  caronaId: number;
-  uid: string;
-  status: 'reservada' | 'cancelada';
-};
+const chaveCaronasLocais = 'carona-campus:local';
 
 const caronasIniciais: Carona[] = [
-  { id: 1, user: 1, vaga: 10, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '08:00', data: '2026-11-01' },
-  { id: 2, user: 1, vaga: 8, embarque: 'Bairro Norte', desembarque: 'IF', selecionado: false, hora: '09:00', data: '2026-11-02' },
-  { id: 3, user: 1, vaga: 7, embarque: 'Shopping', desembarque: 'IF', selecionado: false, hora: '10:00', data: '2026-11-03' },
-  { id: 4, user: 1, vaga: 15, embarque: 'IF', desembarque: 'Terminal', selecionado: false, hora: '11:00', data: '2026-11-04' },
-  { id: 5, user: 1, vaga: 10, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '12:00', data: '2026-11-05' },
+  { id: 1, user: 1, vaga: 10, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '08:00', data: '2026-11-30' },
+  { id: 2, user: 1, vaga: 8, embarque: 'Bairro Norte', desembarque: 'IF', selecionado: false, hora: '09:00', data: '2026-11-29' },
+  { id: 3, user: 1, vaga: 7, embarque: 'Shopping', desembarque: 'IF', selecionado: false, hora: '10:00', data: '2026-11-28' },
+  { id: 4, user: 1, vaga: 15, embarque: 'IF', desembarque: 'Terminal', selecionado: false, hora: '11:00', data: '2026-11-20' },
+  { id: 5, user: 1, vaga: 10, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '12:00', data: '2026-11-26' },
   { id: 6, user: 1, vaga: 4, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:30', data: '2026-10-30' },
   { id: 7, user: 1, vaga: 3, embarque: 'Terminal', desembarque: 'IF', selecionado: false, hora: '23:59', data: '2026-10-31' },
 ];
+
+function caronaValida(valor: unknown): valor is Carona {
+  if (typeof valor !== 'object' || valor === null) {
+    return false;
+  }
+
+  const carona = valor as Partial<Carona>;
+  return typeof carona.id === 'number'
+    && typeof carona.user === 'number'
+    && typeof carona.vaga === 'number'
+    && typeof carona.embarque === 'string'
+    && typeof carona.desembarque === 'string'
+    && typeof carona.hora === 'string'
+    && typeof carona.data === 'string'
+    && typeof carona.selecionado === 'boolean';
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CaronaService {
-
   readonly caronas: Carona[] = caronasIniciais.map((carona) => ({ ...carona }));
   mensagemReserva: string | null = null;
-  private authService = inject(AuthService);
-  private carregadoParaUsuario: string | null = null;
-  private ultimaSincronizacao = 0;
-  private readonly validadeCacheMs = 30_000;
-  private carregamentoEmAndamento: { usuarioId: string; promise: Promise<void> } | null = null;
-  private cacheRestauradoParaUsuario: string | null = null;
 
   async carregarCaronas(): Promise<void> {
-    const usuario = await this.authService.esperarUsuario();
-
-    if (!usuario) {
-      throw new Error('Sua sessão expirou. Entre novamente para acessar as caronas.');
-    }
-
-    this.restaurarCacheLocal(usuario);
-
-    if (
-      this.carregadoParaUsuario === usuario.uid
-      && Date.now() - this.ultimaSincronizacao < this.validadeCacheMs
-    ) {
-      return;
-    }
-
-    if (this.carregamentoEmAndamento?.usuarioId === usuario.uid) {
-      return this.carregamentoEmAndamento.promise;
-    }
-
-    const promise = this.buscarCaronas(usuario);
-    this.carregamentoEmAndamento = { usuarioId: usuario.uid, promise };
-    try {
-      await promise;
-      this.carregadoParaUsuario = usuario.uid;
-      this.ultimaSincronizacao = Date.now();
-    } finally {
-      if (this.carregamentoEmAndamento?.promise === promise) {
-        this.carregamentoEmAndamento = null;
-      }
-    }
-  }
-
-  private async buscarCaronas(usuario: User): Promise<void> {
-    await this.criarCaronasIniciaisSeNecessario();
-
-    const [snapshotCaronas, snapshotReservas] = await Promise.all([
-      getDocs(collection(db, 'caronas')),
-      getDocs(query(collection(db, 'reservas'), where('uid', '==', usuario.uid))),
-    ]);
-
-    const reservasAtivas = new Set(
-      snapshotReservas.docs
-        .map((reserva) => reserva.data() as ReservaFirestore)
-        .filter((reserva) => reserva.status === 'reservada')
-        .map((reserva) => reserva.caronaId)
-    );
-
-    const caronasCarregadas = snapshotCaronas.docs.map((documento) => {
-      const dados = documento.data() as Omit<Carona, 'selecionado'>;
-      return {
-        ...dados,
-        id: Number(documento.id),
-        selecionado: reservasAtivas.has(Number(documento.id)),
-      };
-    }).sort((a, b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora));
-
-    this.caronas.splice(0, this.caronas.length, ...caronasCarregadas);
-    this.salvarCacheLocal(usuario.uid);
+    this.restaurarCaronasLocais();
   }
 
   invalidarCache(): void {
-    this.carregadoParaUsuario = null;
-    this.ultimaSincronizacao = 0;
-    this.cacheRestauradoParaUsuario = null;
-    this.caronas.splice(
-      0,
-      this.caronas.length,
-      ...caronasIniciais.map((carona) => ({ ...carona }))
-    );
-  }
-
-  private restaurarCacheLocal(usuario: User): void {
-    if (this.cacheRestauradoParaUsuario === usuario.uid) {
-      return;
-    }
-
-    this.cacheRestauradoParaUsuario = usuario.uid;
-    const chave = `carona-campus:${usuario.uid}`;
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-
-    const dadosSalvos = localStorage.getItem(chave);
-    if (!dadosSalvos) {
-      return;
-    }
-
-    try {
-      const caronasSalvas = JSON.parse(dadosSalvos) as Carona[];
-      if (!Array.isArray(caronasSalvas) || !caronasSalvas.every((carona) =>
-        typeof carona.id === 'number'
-        && typeof carona.vaga === 'number'
-        && typeof carona.selecionado === 'boolean'
-        && typeof carona.data === 'string'
-      )) {
-        console.warn('O cache local de caronas tem formato inválido e será ignorado.');
-        return;
-      }
-
-      this.caronas.splice(0, this.caronas.length, ...caronasSalvas);
-    } catch (erro: unknown) {
-      console.warn('Não foi possível ler o cache local de caronas.', erro);
-    }
-  }
-
-  private salvarCacheLocal(usuarioId: string): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-
-    try {
-      localStorage.setItem(`carona-campus:${usuarioId}`, JSON.stringify(this.caronas));
-    } catch (erro: unknown) {
-      console.error('Não foi possível salvar o cache local das caronas.', erro);
-    }
+    this.restaurarCaronasLocais();
   }
 
   async reservar(carona: Carona): Promise<boolean> {
-    const usuarioId = await this.usuarioAtual();
-    const referenciaCarona = doc(db, 'caronas', String(carona.id));
-    const referenciaReserva = doc(db, 'reservas', `${usuarioId}_${carona.id}`);
+    await this.carregarCaronas();
+    const caronaAtual = this.caronas.find((item) => item.id === carona.id);
 
-    const resultado = await runTransaction(db, async (transacao) => {
-      const [documentoCarona, documentoReserva] = await Promise.all([
-        transacao.get(referenciaCarona),
-        transacao.get(referenciaReserva),
-      ]);
-
-      if (!documentoCarona.exists()) {
-        throw new Error('A carona não foi encontrada.');
-      }
-
-      const dadosCarona = documentoCarona.data() as Carona;
-      const dadosReserva = documentoReserva.exists()
-        ? documentoReserva.data() as ReservaFirestore
-        : null;
-
-      if (
-        dadosCarona.vaga <= 0
-        || dadosCarona.data < this.dataHoje()
-        || dadosReserva?.status === 'reservada'
-      ) {
-        return { reservada: false, vagasRestantes: 0 };
-      }
-
-      transacao.update(referenciaCarona, { vaga: dadosCarona.vaga - 1 });
-      transacao.set(referenciaReserva, {
-        caronaId: carona.id,
-        uid: usuarioId,
-        status: 'reservada',
-        dataReserva: new Date().toISOString(),
-      });
-      return { reservada: true, vagasRestantes: dadosCarona.vaga - 1 };
-    });
-
-    if (!resultado.reservada) {
+    if (
+      !caronaAtual
+      || caronaAtual.vaga <= 0
+      || caronaAtual.data < this.dataHoje()
+      || caronaAtual.selecionado
+    ) {
       return false;
     }
 
-    const caronaAtual = this.caronas.find((item) => item.id === carona.id);
-    if (caronaAtual) {
-      caronaAtual.vaga = resultado.vagasRestantes;
-      caronaAtual.selecionado = true;
-      this.mensagemReserva = `Vaga reservada — restante: ${caronaAtual.vaga}`;
-      this.ultimaSincronizacao = Date.now();
-      this.salvarCacheLocal(usuarioId);
-    }
+    caronaAtual.vaga -= 1;
+    caronaAtual.selecionado = true;
+    this.mensagemReserva = `Vaga reservada — restante: ${caronaAtual.vaga}`;
+    this.salvarCaronasLocais();
     return true;
   }
 
   async cancelarReserva(carona: Carona): Promise<boolean> {
-    const usuarioId = await this.usuarioAtual();
-    const referenciaCarona = doc(db, 'caronas', String(carona.id));
-    const referenciaReserva = doc(db, 'reservas', `${usuarioId}_${carona.id}`);
+    await this.carregarCaronas();
+    const caronaAtual = this.caronas.find((item) => item.id === carona.id);
 
-    const resultado = await runTransaction(db, async (transacao) => {
-      const [documentoCarona, documentoReserva] = await Promise.all([
-        transacao.get(referenciaCarona),
-        transacao.get(referenciaReserva),
-      ]);
-
-      if (!documentoCarona.exists() || !documentoReserva.exists()) {
-        return { cancelada: false, vagasRestantes: 0 };
-      }
-
-      const dadosCarona = documentoCarona.data() as Carona;
-      const dadosReserva = documentoReserva.data() as ReservaFirestore;
-
-      if (
-        dadosReserva.status !== 'reservada'
-        || dadosCarona.data < this.dataHoje()
-      ) {
-        return { cancelada: false, vagasRestantes: 0 };
-      }
-
-      transacao.update(referenciaCarona, { vaga: dadosCarona.vaga + 1 });
-      transacao.update(referenciaReserva, {
-        status: 'cancelada',
-        dataCancelamento: new Date().toISOString(),
-      });
-      return { cancelada: true, vagasRestantes: dadosCarona.vaga + 1 };
-    });
-
-    if (!resultado.cancelada) {
+    if (
+      !caronaAtual
+      || !caronaAtual.selecionado
+      || caronaAtual.data < this.dataHoje()
+    ) {
       return false;
     }
 
-    const caronaAtual = this.caronas.find((item) => item.id === carona.id);
-    if (caronaAtual) {
-      caronaAtual.vaga = resultado.vagasRestantes;
-      caronaAtual.selecionado = false;
-      this.ultimaSincronizacao = Date.now();
-      this.salvarCacheLocal(usuarioId);
-    }
+    caronaAtual.vaga += 1;
+    caronaAtual.selecionado = false;
+    this.salvarCaronasLocais();
     return true;
   }
 
@@ -288,30 +110,87 @@ export class CaronaService {
     );
   }
 
-  private async criarCaronasIniciaisSeNecessario(): Promise<void> {
-    const referenciaInicializacao = doc(db, 'configuracao', 'caronas-iniciais');
+  private restaurarCaronasLocais(): void {
+    const iniciais = caronasIniciais
+      .map((carona) => ({ ...carona }))
+      .sort((a, b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora));
+    this.caronas.splice(0, this.caronas.length, ...iniciais);
 
-    await runTransaction(db, async (transacao) => {
-      const inicializacao = await transacao.get(referenciaInicializacao);
-      if (inicializacao.exists()) {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    try {
+      const dadosSalvos = this.lerCaronasSalvas();
+      if (!dadosSalvos) {
+        this.salvarCaronasLocais();
         return;
       }
 
-      for (const carona of caronasIniciais) {
-        transacao.set(doc(db, 'caronas', String(carona.id)), carona);
-      }
-      transacao.set(referenciaInicializacao, {
-        inicializadaEm: new Date().toISOString(),
-      });
-    });
+      const caronasPorId = new Map(
+        this.caronas.map((carona) => [carona.id, carona])
+      );
+      dadosSalvos.forEach((carona) => caronasPorId.set(carona.id, carona));
+      this.caronas.splice(
+        0,
+        this.caronas.length,
+        ...[...caronasPorId.values()].sort(
+          (a, b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora)
+        )
+      );
+      this.salvarCaronasLocais();
+    } catch (erro: unknown) {
+      console.warn('Não foi possível ler o cache local de caronas.', erro);
+      this.salvarCaronasLocais();
+    }
   }
 
-  private async usuarioAtual(): Promise<string> {
-    const usuario = await this.authService.esperarUsuario();
-    if (!usuario) {
-      throw new Error('Sua sessão expirou. Entre novamente para reservar ou cancelar.');
+  private lerCaronasSalvas(): Carona[] | null {
+    const cacheAtual = localStorage.getItem(chaveCaronasLocais);
+    if (cacheAtual) {
+      return this.validarCaronasSalvas(cacheAtual);
     }
-    return usuario.uid;
+
+    const cacheLegado: Carona[] = [];
+    for (let indice = 0; indice < localStorage.length; indice += 1) {
+      const chave = localStorage.key(indice);
+      if (!chave?.startsWith('carona-campus:')) {
+        continue;
+      }
+
+      const dados = localStorage.getItem(chave);
+      if (dados) {
+        cacheLegado.push(...(this.validarCaronasSalvas(dados) ?? []));
+      }
+    }
+
+    return cacheLegado.length > 0 ? cacheLegado : null;
+  }
+
+  private validarCaronasSalvas(dados: string): Carona[] | null {
+    try {
+      const caronasSalvas: unknown = JSON.parse(dados);
+      if (Array.isArray(caronasSalvas) && caronasSalvas.every(caronaValida)) {
+        return caronasSalvas;
+      }
+    } catch (erro: unknown) {
+      console.warn('Não foi possível ler o cache local de caronas.', erro);
+    }
+
+    console.warn('O cache local de caronas tem formato inválido e será ignorado.');
+    return null;
+  }
+
+  private salvarCaronasLocais(): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    try {
+      localStorage.setItem(chaveCaronasLocais, JSON.stringify(this.caronas));
+    } catch (erro: unknown) {
+      console.error('Não foi possível salvar as caronas neste dispositivo.', erro);
+    }
   }
 
   private dataHoje(): string {
