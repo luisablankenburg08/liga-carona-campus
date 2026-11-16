@@ -4,13 +4,13 @@ import { Carona } from '../models/carona';
 const chaveCaronasLocais = 'carona-campus:local';
 
 const caronasIniciais: Carona[] = [
-  { id: 1, user: 1, vaga: 10, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '08:00', data: '2026-11-30' },
-  { id: 2, user: 1, vaga: 8, embarque: 'Bairro Norte', desembarque: 'IF', selecionado: false, hora: '09:00', data: '2026-11-29' },
-  { id: 3, user: 1, vaga: 7, embarque: 'Shopping', desembarque: 'IF', selecionado: false, hora: '10:00', data: '2026-11-28' },
-  { id: 4, user: 1, vaga: 15, embarque: 'IF', desembarque: 'Terminal', selecionado: false, hora: '11:00', data: '2026-11-20' },
-  { id: 5, user: 1, vaga: 10, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '12:00', data: '2026-11-26' },
-  { id: 6, user: 1, vaga: 4, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:30', data: '2026-10-30' },
-  { id: 7, user: 1, vaga: 3, embarque: 'Terminal', desembarque: 'IF', selecionado: false, hora: '23:59', data: '2026-10-31' },
+  { id: 1, user: 1, vaga: 3, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:00', data: '2026-11-17' },
+  { id: 2, user: 1, vaga: 2, embarque: 'Ouvidor', desembarque: 'IF', selecionado: false, hora: '07:30', data: '2026-11-29' },
+  { id: 3, user: 1, vaga: 1, embarque: 'Macacu', desembarque: 'IF', selecionado: false, hora: '06:30', data: '2026-11-28' },
+  { id: 4, user: 1, vaga: 1, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '17:30', data: '2026-11-20' },
+  { id: 5, user: 1, vaga: 3, embarque: 'IF', desembarque: 'Macacu', selecionado: false, hora: '17:40', data: '2026-11-26' },
+  { id: 6, user: 1, vaga: 4, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '18h00', data: '2026-10-30' },
+  { id: 7, user: 1, vaga: 3, embarque: 'Ouvidor', desembarque: 'IF', selecionado: false, hora: '18h30', data: '2026-10-17' },
 ];
 
 function caronaValida(valor: unknown): valor is Carona {
@@ -73,7 +73,7 @@ export class CaronaService {
   async cancelarReserva(carona: Carona): Promise<boolean> {
     await this.carregarCaronas();
     const caronaAtual = this.caronas.find((item) => item.id === carona.id);
-
+  
     if (
       !caronaAtual
       || !caronaAtual.selecionado
@@ -81,12 +81,19 @@ export class CaronaService {
     ) {
       return false;
     }
-
+  
     caronaAtual.vaga += 1;
     caronaAtual.selecionado = false;
+  
+    // Sincroniza o objeto recebido da tela, caso seja uma cópia
+    carona.vaga = caronaAtual.vaga;
+    carona.selecionado = false;
+  
+    this.mensagemReserva = null;
     this.salvarCaronasLocais();
     return true;
   }
+  
 
   get proximasReservas(): Carona[] {
     return this.caronas.filter(
@@ -151,27 +158,6 @@ export class CaronaService {
     }
   }
 
-  private lerCaronasSalvas(): Carona[] | null {
-    const cacheLegado: Carona[] = [];
-    for (let indice = 0; indice < localStorage.length; indice += 1) {
-      const chave = localStorage.key(indice);
-      if (!chave?.startsWith('carona-campus:') || chave === chaveCaronasLocais) {
-        continue;
-      }
-
-      const dados = localStorage.getItem(chave);
-      if (dados) {
-        cacheLegado.push(...(this.validarCaronasSalvas(dados) ?? []));
-      }
-    }
-
-    const cacheAtual = localStorage.getItem(chaveCaronasLocais);
-    if (cacheAtual) {
-      cacheLegado.push(...(this.validarCaronasSalvas(cacheAtual) ?? []));
-    }
-
-    return cacheLegado.length > 0 ? cacheLegado : null;
-  }
 
   private validarCaronasSalvas(dados: string): Carona[] | null {
     try {
@@ -187,6 +173,24 @@ export class CaronaService {
     return null;
   }
 
+  private lerCaronasSalvas(): Carona[] | null {
+    const chavesParaRemover: string[] = [];
+    for (let indice = 0; indice < localStorage.length; indice += 1) {
+      const chave = localStorage.key(indice);
+      if (chave?.startsWith('carona-campus:') && chave !== chaveCaronasLocais) {
+        chavesParaRemover.push(chave);
+      }
+    }
+    chavesParaRemover.forEach((chave) => localStorage.removeItem(chave));
+  
+    const cacheAtual = localStorage.getItem(chaveCaronasLocais);
+    if (!cacheAtual) {
+      return null;
+    }
+  
+    return this.validarCaronasSalvas(cacheAtual);
+  }
+  
   private salvarCaronasLocais(): void {
     if (typeof localStorage === 'undefined') {
       return;

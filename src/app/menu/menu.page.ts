@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton } from '@ionic/angular';
+import { IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { Carona } from '../models/carona';
 import { CaronaService } from '../services/caronaService';
 import { CaronaComponent } from '../components/carona/carona.component';
-import { Router } from '@angular/router';
 import { AuthService } from '../services/authService';
-import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-menu',
@@ -15,22 +14,21 @@ import { NavController } from '@ionic/angular';
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, CaronaComponent, IonButton, IonButtons]
 })
 export class MenuPage {
-
   somenteHoje = false;
   carregando = false;
   sincronizando = false;
   mensagemErro = '';
 
-  get listacaronas(): Carona[] {
+  public auth = inject(AuthService);
+  public caronaService = inject(CaronaService);
+  private router = inject(Router);
+  private navCtrl = inject(NavController);
+
+  get caronas(): Carona[] {
     return this.somenteHoje
       ? this.caronaService.caronasDeHoje
       : this.caronaService.caronasDisponiveis;
   }
-
-  public auth = inject(AuthService);
-  private caronaService = inject(CaronaService);
-  private router = inject(Router);
-  private navCtrl = inject(NavController);
 
   ionViewWillEnter(): void {
     void this.carregarCaronas();

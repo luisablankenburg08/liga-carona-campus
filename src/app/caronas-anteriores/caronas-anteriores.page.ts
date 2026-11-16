@@ -34,20 +34,10 @@ export class CaronasAnterioresPage {
   async carregarCaronas(): Promise<void> {
     this.carregando = this.caronaService.caronas.length === 0;
     this.sincronizando = !this.carregando;
-    try {
-      await this.caronaService.carregarCaronas();
-    } catch (erro: unknown) {
-      this.mensagemErro = erro instanceof Error
-        ? erro.message
-        : 'Não foi possível carregar as caronas anteriores.';
-    } finally {
-      this.carregando = false;
-      this.sincronizando = false;
-    }
   }
 
   voltarParaCaronas(): void {
-    void this.router.navigate(['/menu']);
+    this.router.navigate(['/menu']);
   }
 
   async logout(): Promise<void> {
