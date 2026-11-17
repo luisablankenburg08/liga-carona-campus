@@ -35,7 +35,7 @@
     <p class="estado-atualizacao" role="status">Atualizando disponibilidade...</p>
   }
   <div class="vaga">
-    @for (carona of listacaronas; track carona.id) {
+    @for (carona of caronas; track carona.id) {
       <app-carona
         [carona]="carona"
         (adicionar)="adicionarCarona($event)"

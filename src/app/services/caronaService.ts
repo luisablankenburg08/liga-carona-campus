@@ -4,7 +4,7 @@ import { Carona } from '../models/carona';
 const chaveCaronasLocais = 'carona-campus:local';
 
 const caronasIniciais: Carona[] = [
-  { id: 1, user: 1, vaga: 3, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:00', data: '2026-11-17' },
+  { id: 1, user: 1, vaga: 3, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:00', data: '2026-11-18' },
   { id: 2, user: 1, vaga: 2, embarque: 'Ouvidor', desembarque: 'IF', selecionado: false, hora: '07:30', data: '2026-11-29' },
   { id: 3, user: 1, vaga: 1, embarque: 'Macacu', desembarque: 'IF', selecionado: false, hora: '06:30', data: '2026-11-28' },
   { id: 4, user: 1, vaga: 1, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '17:30', data: '2026-11-20' },
