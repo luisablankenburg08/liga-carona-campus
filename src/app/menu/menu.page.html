@@ -26,14 +26,7 @@
       </ion-button>
     </div>
   </section>
-  @if (mensagemErro) {
-    <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
-  }
-  @if (carregando) {
-    <p class="estado-vazio" role="status">Carregando caronas...</p>
-  } @else if (sincronizando) {
-    <p class="estado-atualizacao" role="status">Atualizando disponibilidade...</p>
-  }
+  
   <div class="vaga">
     @for (carona of caronas; track carona.id) {
       <app-carona
@@ -41,7 +34,7 @@
         (adicionar)="adicionarCarona($event)"
       ></app-carona>
     } @empty {
-      <p class="estado-vazio">Não há caronas disponíveis no momento.</p>
+      <p class="estado-vazio">Não há caronas disponíveis.</p>
     }
   </div>
 

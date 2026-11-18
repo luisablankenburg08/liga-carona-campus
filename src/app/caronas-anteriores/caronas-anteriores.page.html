@@ -18,11 +18,6 @@
     @if (mensagemErro) {
       <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
     }
-    @if (carregando) {
-      <p class="estado-vazio" role="status">Carregando caronas anteriores...</p>
-    } @else if (sincronizando) {
-      <p class="estado-atualizacao" role="status">Atualizando caronas anteriores...</p>
-    }
     @for (carona of caronasAnteriores; track carona.id) {
       <app-carona [carona]="carona" modo="historico"></app-carona>
     } @empty {

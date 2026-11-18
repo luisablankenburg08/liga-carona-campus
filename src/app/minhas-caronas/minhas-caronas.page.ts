@@ -25,12 +25,6 @@ export class MinhasCaronasPage {
   mensagemErro = '';
   mensagemReserva = '';
 
-  ionViewWillEnter(): void {
-    this.mensagemReserva = this.caronaService.mensagemReserva ?? '';
-    this.caronaService.mensagemReserva = null;
-    void this.carregarCaronas();
-  }
-
   get proximasCaronas(): Carona[] {
     return this.caronaService.proximasReservas;
   }
@@ -39,7 +33,7 @@ export class MinhasCaronasPage {
     return this.caronaService.historicoReservas;
   }
 
-  async carregarCaronas(): Promise<void> {
+  async carregarCaronas() {
     this.carregando = this.caronaService.caronas.length === 0;
     this.sincronizando = !this.carregando;
     try {
@@ -54,7 +48,7 @@ export class MinhasCaronasPage {
     }
   }
 
-  async cancelarReserva(carona: Carona): Promise<void> {
+  async cancelarReserva(carona: Carona) {
     try {
       const cancelada = await this.caronaService.cancelarReserva(carona);
       if (!cancelada) {
@@ -69,15 +63,15 @@ export class MinhasCaronasPage {
     }
   }
 
-  voltarParaCaronas(): void {
+  voltarParaCaronas(){
     void this.router.navigate(['/menu']);
   }
 
-  abrirCaronasAnteriores(): void {
+  abrirCaronasAnteriores() {
     void this.router.navigate(['/caronas-anteriores']);
   }
 
-  async logout(): Promise<void> {
+  async logout() {
     try {
       await this.auth.sair();
       this.caronaService.invalidarCache();

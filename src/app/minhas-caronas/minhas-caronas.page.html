@@ -21,11 +21,6 @@
     @if (mensagemErro) {
       <p class="estado-erro" role="alert">{{ mensagemErro }}</p>
     }
-    @if (carregando) {
-      <p class="estado-vazio" role="status">Carregando suas caronas...</p>
-    } @else if (sincronizando) {
-      <p class="estado-atualizacao" role="status">Atualizando suas caronas...</p>
-    }
     <section>
       <h2>Próximas caronas</h2>
       @for (carona of proximasCaronas; track carona.id) {

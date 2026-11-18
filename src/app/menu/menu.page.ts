@@ -30,11 +30,7 @@ export class MenuPage {
       : this.caronaService.caronasDisponiveis;
   }
 
-  ionViewWillEnter(): void {
-    void this.carregarCaronas();
-  }
-
-  async carregarCaronas(): Promise<void> {
+  async carregarCaronas() {
     this.carregando = this.caronaService.caronas.length === 0;
     this.sincronizando = !this.carregando;
     this.mensagemErro = '';
@@ -50,7 +46,7 @@ export class MenuPage {
     }
   }
 
-  async adicionarCarona(carona: Carona): Promise<void> {
+  async adicionarCarona(carona: Carona){
     try {
       await this.caronaService.carregarCaronas();
       if (await this.caronaService.reservar(carona)) {
@@ -68,19 +64,19 @@ export class MenuPage {
     }
   }
 
-  alternarFiltro(): void {
+  alternarFiltro() {
     this.somenteHoje = !this.somenteHoje;
   }
 
-  abrirMinhasCaronas(): void {
+  abrirMinhasCaronas() {
     void this.router.navigate(['/minhas-caronas']);
   }
 
-  abrirCaronasAnteriores(): void {
+  abrirCaronasAnteriores() {
     void this.router.navigate(['/caronas-anteriores']);
   }
 
-  async logout(): Promise<void> {
+  async logout() {
     try {
       await this.auth.sair();
       this.caronaService.invalidarCache();

@@ -27,20 +27,16 @@ export class CaronasAnterioresPage {
     return this.caronaService.caronasAnteriores;
   }
 
-  ionViewWillEnter(): void {
-    void this.carregarCaronas();
-  }
-
-  async carregarCaronas(): Promise<void> {
+  async carregarCaronas() {
     this.carregando = this.caronaService.caronas.length === 0;
     this.sincronizando = !this.carregando;
   }
 
-  voltarParaCaronas(): void {
+  voltarParaCaronas() {
     this.router.navigate(['/menu']);
   }
 
-  async logout(): Promise<void> {
+  async logout() {
     try {
       await this.auth.sair();
       this.caronaService.invalidarCache();
