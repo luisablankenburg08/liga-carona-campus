@@ -7,8 +7,8 @@ const caronasIniciais: Carona[] = [
   { id: 1, user: 1, vaga: 3, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '07:00', data: '2026-11-18' },
   { id: 2, user: 1, vaga: 2, embarque: 'Ouvidor', desembarque: 'IF', selecionado: false, hora: '07:30', data: '2026-11-29' },
   { id: 3, user: 1, vaga: 1, embarque: 'Macacu', desembarque: 'IF', selecionado: false, hora: '06:30', data: '2026-11-28' },
-  { id: 4, user: 1, vaga: 1, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '17:30', data: '2026-11-20' },
-  { id: 5, user: 1, vaga: 3, embarque: 'IF', desembarque: 'Macacu', selecionado: false, hora: '17:40', data: '2026-11-26' },
+  { id: 4, user: 1, vaga: 1, embarque: 'IF', desembarque: 'Centro', selecionado: false, hora: '17:30', data: '2026-11-29' },
+  { id: 5, user: 1, vaga: 3, embarque: 'IF', desembarque: 'Macacu', selecionado: false, hora: '17:40', data: '2026-11-24' },
   { id: 6, user: 1, vaga: 4, embarque: 'Centro', desembarque: 'IF', selecionado: false, hora: '18h00', data: '2026-10-30' },
   { id: 7, user: 1, vaga: 3, embarque: 'Ouvidor', desembarque: 'IF', selecionado: false, hora: '18h30', data: '2026-10-17' },
 ];
